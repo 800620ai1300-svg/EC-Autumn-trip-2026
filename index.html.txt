@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>秋季阿里山微奢華兩日遊</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            custom: {
+              purple1: '#8888D0', // 主紫色1
+              purple2: '#CCD1F7', // 主紫色2
+              silver: '#E9E8F0',  // 副銀色
+              darkPurple: '#1F1A3A',
+              mapleOrange: '#D96B27', // 秋楓橘
+              cardBg: 'rgba(233, 232, 240, 0.85)'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Vue 3 -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* 隱藏滾動條 */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    /* 調整後的背景顏色：調亮左半邊，維持高雅奢華紫銀微光 */
+    body {
+      background: linear-gradient(135deg, #42386E 0%, #5C528B 50%, #9090D5 100%);
+      background-attachment: fixed;
+    }
+
+    .glass-silver-card {
+      background: rgba(240, 239, 245, 0.93);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(204, 209, 247, 0.7);
+      box-shadow: 0 8px 32px 0 rgba(31, 26, 58, 0.2);
+    }
+
+    .glass-dark-card {
+      background: rgba(45, 38, 78, 0.82);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(204, 209, 247, 0.35);
+    }
+
+    /* 秋葉楓紅邊框裝飾效果 */
+    .maple-border {
+      border: 2px solid transparent;
+      background-image: linear-gradient(rgba(31, 26, 58, 0.7), rgba(31, 26, 58, 0.7)), 
+                        linear-gradient(135deg, #E65100 0%, #F57C00 40%, #FFB74D 70%, #D84315 100%);
+      background-origin: border-box;
+      background-clip: padding-box, border-box;
+      box-shadow: 0 0 15px rgba(230, 81, 0, 0.35);
+    }
+  </style>
+</head>
+<body class="text-custom-darkPurple font-sans antialiased min-h-screen pb-12">
+
+  <div id="app" class="max-w-xl mx-auto relative min-h-screen shadow-2xl bg-custom-darkPurple/20">
+    
+    <!-- 頂部 App Header -->
+    <header class="sticky top-0 z-50 glass-dark-card px-3 py-3 flex justify-between items-center border-b border-custom-purple2/30">
+      <div class="flex items-center space-x-2">
+        <!-- 公司 Logo SVG (重現 EC 怡昌 Oval Logo) -->
+        <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center p-1 shadow border border-rose-300">
+          <svg viewBox="0 0 200 100" class="w-full h-full">
+            <ellipse cx="100" cy="50" rx="90" ry="40" fill="none" stroke="#C82323" stroke-width="10"/>
+            <path d="M 45 35 L 85 35 Q 95 35 95 45 Q 95 52 85 52 L 60 52 L 60 62 L 85 62 Q 95 62 95 70 Q 95 78 85 78 L 45 78 Z 
+                     M 115 35 L 155 35 L 155 48 L 130 48 L 130 62 L 155 62 L 155 78 L 115 78 Z" fill="#C82323"/>
+          </svg>
+        </div>
+        <span class="text-xs sm:text-sm font-bold text-custom-silver tracking-wider">秋季阿里山微奢華兩日遊</span>
+      </div>
+
+      <!-- 右上方選單區域 -->
+      <nav class="flex items-center space-x-1">
+        <button @click="activeTab = 'overview'" 
+                :class="activeTab === 'overview' ? 'bg-custom-purple1 text-white font-bold' : 'text-custom-silver/80 hover:text-white'"
+                class="px-2 py-1.5 rounded-lg text-xs transition duration-200">
+          活動總覽
+        </button>
+        <button @click="activeTab = 'schedule'" 
+                :class="activeTab === 'schedule' ? 'bg-custom-purple1 text-white font-bold' : 'text-custom-silver/80 hover:text-white'"
+                class="px-2 py-1.5 rounded-lg text-xs transition duration-200">
+          每日行程
+        </button>
+        <button @click="activeTab = 'info'" 
+                :class="activeTab === 'info' ? 'bg-custom-purple1 text-white font-bold' : 'text-custom-silver/80 hover:text-white'"
+                class="px-2 py-1.5 rounded-lg text-xs transition duration-200">
+          旅遊資訊
+        </button>
+        <button @click="scrollToEmergency" 
+                class="px-1.5 py-1.5 rounded-lg text-xs bg-rose-500/20 text-rose-200 border border-rose-400/30 hover:bg-rose-500/30 transition">
+          緊急聯絡
+        </button>
+      </nav>
+    </header>
+
+    <!-- 主頁面切換內容 -->
+    <main class="p-4 space-y-6">
+
+      <!-- ================= 頁面 1: 活動總覽 (Overview) ================= -->
+      <section v-show="activeTab === 'overview'" class="space-y-5">
+        
+        <!-- 表頭 (Hero Banner)：加入秋楓邊框 (maple-border) -->
+        <div class="relative rounded-3xl overflow-hidden shadow-2xl maple-border min-h-[320px] flex flex-col justify-end p-6">
+          <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80" 
+               alt="阿里山日出" class="absolute inset-0 w-full h-full object-cover object-center">
+          <div class="absolute inset-0 bg-gradient-to-t from-custom-darkPurple via-custom-darkPurple/60 to-transparent"></div>
+
+          <div class="relative z-10 space-y-2">
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-custom-mapleOrange/90 backdrop-blur-md text-white text-[11px] font-semibold shadow">
+              <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+              <span>2026/11/14 - 11/15</span>
+            </div>
+            
+            <h1 class="text-2xl font-black text-white tracking-wide leading-tight">
+              秋季阿里山微奢華兩日遊
+            </h1>
+
+            <p class="text-xs text-custom-purple2/90 leading-relaxed font-light">
+              在芬多精的環抱下共享浩瀚日出，在水墨意象建築中沐浴藝術的洗禮。
+            </p>
+          </div>
+        </div>
+
+        <!-- 狀態模擬控制按鈕 (供測試切換不同時間節點) -->
+        <div class="flex items-center justify-between glass-dark-card px-3 py-2 rounded-xl border border-custom-purple2/20 text-[11px] text-custom-silver">
+          <span>模擬行程階段狀態：</span>
+          <div class="flex space-x-1">
+            <button @click="tripState = 'before'" :class="tripState === 'before' ? 'bg-custom-purple1 text-white' : 'bg-custom-darkPurple text-gray-300'" class="px-2 py-0.5 rounded">未開始</button>
+            <button @click="tripState = 'ongoing'" :class="tripState === 'ongoing' ? 'bg-custom-purple1 text-white' : 'bg-custom-darkPurple text-gray-300'" class="px-2 py-0.5 rounded">進行中</button>
+            <button @click="tripState = 'completed'" :class="tripState === 'completed' ? 'bg-custom-purple1 text-white' : 'bg-custom-darkPurple text-gray-300'" class="px-2 py-0.5 rounded">已完成</button>
+          </div>
+        </div>
+
+        <!-- 表頭下方："行程即時動態" 卡片 (已取消背景圖片，刪除紫色與綠色圓形記號) -->
+        <div class="glass-silver-card rounded-2xl p-5 space-y-4">
+          <div class="flex justify-between items-center border-b border-custom-purple1/20 pb-3">
+            <span class="text-xs font-bold text-custom-darkPurple">行程即時動態</span>
+            <button @click="activeTab = 'schedule'" class="text-xs font-bold text-custom-purple1 hover:text-custom-darkPurple flex items-center gap-1 transition">
+              完整行程 <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <!-- 階段 1: 11/14 行程未開始前 (無圖示圓圈、無背景照片、純文字) -->
+          <div v-if="tripState === 'before'" class="py-6 px-4 text-center space-y-1.5 bg-white/80 rounded-xl border border-custom-purple2/40">
+            <h3 class="text-base font-black text-custom-darkPurple">行程即將開始</h3>
+            <p class="text-xs text-gray-600">請收拾好行李，帶著愉快的心情和我們一起出發</p>
+          </div>
+
+          <!-- 階段 2: 11/14 - 11/15 行程進行中 -->
+          <div v-else-if="tripState === 'ongoing'" class="space-y-3">
+            <!-- 目前行程 -->
+            <div class="bg-white/90 p-3.5 rounded-xl border border-custom-purple2/60 space-y-1">
+              <div class="flex justify-between items-center text-[11px] text-custom-purple1 font-bold">
+                <span>CURRENT EVENT • 目前行程</span>
+                <span class="bg-custom-purple2/50 px-2 py-0.5 rounded text-custom-darkPurple">{{ currentEvent.time }}</span>
+              </div>
+              <div class="text-sm font-bold text-custom-darkPurple">{{ currentEvent.title }}</div>
+              <div class="text-xs text-gray-500 flex items-center gap-1">
+                <i data-lucide="map-pin" class="w-3.5 h-3.5 text-custom-purple1"></i> {{ currentEvent.location }}
+              </div>
+            </div>
+
+            <!-- 下一個行程 -->
+            <div class="bg-custom-silver/90 p-3.5 rounded-xl border border-custom-purple2/40 space-y-1">
+              <div class="flex justify-between items-center text-[11px] text-gray-500 font-bold">
+                <span>NEXT EVENT • 下一個行程</span>
+                <span class="bg-gray-200 px-2 py-0.5 rounded text-gray-700">{{ nextEvent.time }}</span>
+              </div>
+              <div class="text-sm font-bold text-custom-darkPurple/80">{{ nextEvent.title }}</div>
+              <div class="text-xs text-gray-500 flex items-center gap-1">
+                <i data-lucide="map-pin" class="w-3.5 h-3.5 text-gray-400"></i> {{ nextEvent.location }}
+              </div>
+            </div>
+          </div>
+
+          <!-- 階段 3: 11/15 行程結束後 (無圖示圓圈、無背景照片、純文字) -->
+          <div v-else-if="tripState === 'completed'" class="py-6 px-4 text-center space-y-1.5 bg-white/80 rounded-xl border border-custom-purple2/40">
+            <h3 class="text-base font-black text-custom-darkPurple">旅程已完成</h3>
+            <p class="text-xs text-gray-600">謝謝你參與本次旅行，期待下次見！</p>
+          </div>
+
+        </div>
+
+        <!-- 即時天氣概況 -->
+        <div class="glass-silver-card rounded-2xl p-4 flex justify-between items-center border-l-4 border-l-custom-purple1">
+          <div>
+            <div class="text-xs font-semibold text-custom-purple1 flex items-center gap-1">
+              <i data-lucide="cloud-sun" class="w-4 h-4"></i> 阿里山國家森林遊樂區
+            </div>
+            <div class="text-2xl font-black text-custom-darkPurple mt-0.5">
+              15°C
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="px-2.5 py-1 text-xs rounded-full bg-custom-purple1 text-white font-medium">
+              涼爽宜人
+            </span>
+            <div class="text-[10px] text-gray-500 mt-1">山區溫差較大，請注意保暖</div>
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- ================= 頁面 2: 每日行程表 (Schedule) ================= -->
+      <section v-show="activeTab === 'schedule'" class="space-y-4">
+        
+        <!-- 橫向滑動日期切換 -->
+        <div class="flex space-x-3 overflow-x-auto no-scrollbar py-1">
+          <button @click="selectedDay = 1" 
+                  :class="selectedDay === 1 ? 'bg-custom-purple1 text-white shadow-lg' : 'glass-silver-card text-custom-darkPurple/70'"
+                  class="flex-1 min-w-[140px] p-3 rounded-xl text-left transition duration-300">
+            <div class="text-[10px] uppercase font-bold tracking-wider opacity-80">DAY 01 (11/14)</div>
+            <div class="text-sm font-bold mt-0.5">森林小火車與老街</div>
+          </button>
+
+          <button @click="selectedDay = 2" 
+                  :class="selectedDay === 2 ? 'bg-custom-purple1 text-white shadow-lg' : 'glass-silver-card text-custom-darkPurple/70'"
+                  class="flex-1 min-w-[140px] p-3 rounded-xl text-left transition duration-300">
+            <div class="text-[10px] uppercase font-bold tracking-wider opacity-80">DAY 02 (11/15)</div>
+            <div class="text-sm font-bold mt-0.5">玉山日出與故宮南院</div>
+          </button>
+        </div>
+
+        <!-- 當天行程代表性景點照片 (純照片，無上方疊加文字) -->
+        <div class="relative rounded-2xl overflow-hidden shadow-md h-40 border border-custom-purple2/40">
+          <img :src="selectedDay === 1 
+                      ? 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80' 
+                      : 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80'" 
+               alt="當天代表景點照片" class="w-full h-full object-cover">
+        </div>
+
+        <!-- 行程列表 -->
+        <div class="space-y-3">
+          <div class="flex justify-between items-center px-1">
+            <h2 class="text-sm font-bold text-custom-silver flex items-center gap-1.5">
+              <i data-lucide="clock" class="w-4 h-4 text-custom-purple2"></i> DAY {{ selectedDay }} 行程表
+            </h2>
+            <button @click="openAddModal" class="text-xs bg-custom-purple2 text-custom-darkPurple font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 shadow hover:bg-white transition">
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i> 新增行程
+            </button>
+          </div>
+
+          <!-- 卡片 -->
+          <div v-for="item in currentDaySchedule" :key="item.id" class="glass-silver-card rounded-2xl p-4 space-y-2 relative">
+            <div class="flex justify-between items-start">
+              <div class="flex items-center space-x-2">
+                <span class="px-2 py-0.5 rounded text-xs font-mono bg-custom-purple1 text-white font-bold">
+                  {{ item.time }}
+                </span>
+                <h3 class="font-bold text-custom-darkPurple text-sm">{{ item.title }}</h3>
+              </div>
+              <div class="flex items-center space-x-1">
+                <button @click="editItem(item)" class="p-1 text-gray-500 hover:text-custom-purple1"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
+                <button @click="deleteItem(item.id)" class="p-1 text-gray-500 hover:text-rose-500"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between text-xs text-gray-600 pt-1">
+              <span class="flex items-center gap-1">
+                <i data-lucide="map-pin" class="w-3.5 h-3.5 text-custom-purple1"></i> {{ item.location }}
+              </span>
+              <span class="text-custom-purple1 font-semibold flex items-center gap-1">
+                <i data-lucide="thermometer" class="w-3.5 h-3.5"></i> {{ item.temp }}°C
+              </span>
+            </div>
+
+            <p v-if="item.notes" class="text-xs text-gray-700 bg-white/70 p-2.5 rounded-xl border border-custom-purple2/40 leading-relaxed">
+              <span class="text-custom-purple1 font-bold">備註：</span>{{ item.notes }}
+            </p>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ================= 頁面 3: 旅遊資訊 (Info) ================= -->
+      <section v-show="activeTab === 'info'" class="space-y-6">
+        
+        <!-- 版塊：溫馨提醒 -->
+        <div class="glass-silver-card rounded-2xl p-5 space-y-3">
+          <h2 class="text-base font-bold text-custom-darkPurple flex items-center gap-2 border-b border-custom-purple1/20 pb-2">
+            <i data-lucide="bell" class="w-5 h-5 text-custom-purple1"></i> 溫馨提醒
+          </h2>
+          <ul class="space-y-2 text-xs text-gray-700 leading-relaxed list-disc list-inside">
+            <li><strong class="text-custom-darkPurple">高山溫差保暖：</strong>阿里山海拔約 2,200 公尺，日夜溫差較大，請務必準備保暖防風外套。</li>
+            <li><strong class="text-custom-darkPurple">阿里山小火車：</strong>森林鐵路本線座位採預約制，如遇額滿將以替代接駁車安排。</li>
+            <li><strong class="text-custom-darkPurple">步道健行準備：</strong>請穿著舒適的休閒鞋或登山鞋，並攜帶雨具及個人常備藥品。</li>
+          </ul>
+        </div>
+
+        <!-- 版塊：飯店資訊 -->
+        <div class="glass-silver-card rounded-2xl overflow-hidden space-y-3">
+          <div class="h-44 w-full relative">
+            <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80" 
+                 alt="阿里山賓館" class="w-full h-full object-cover">
+            <div class="absolute bottom-2 left-3 px-2.5 py-1 rounded bg-black/60 text-white text-xs backdrop-blur-sm">
+              阿里山賓館 Alishan House
+            </div>
+          </div>
+          <div class="p-5 pt-0 space-y-2">
+            <h2 class="text-base font-bold text-custom-darkPurple flex items-center gap-2">
+              <i data-lucide="hotel" class="w-5 h-5 text-custom-purple1"></i> 飯店資訊
+            </h2>
+            <p class="text-xs text-gray-700 leading-relaxed">
+              阿里山賓館坐落於海拔 2,274 公尺的阿里山山嶺，營業至今已有逾百年歷史。從賓館步行即可輕鬆抵達沼平車站與觀日步道，建築融合了歷史風華與尊榮的住宿體驗。
+            </p>
+          </div>
+        </div>
+
+        <!-- 版塊：景點介紹 -->
+        <div class="space-y-4">
+          <h2 class="text-base font-bold text-custom-silver flex items-center gap-2">
+            <i data-lucide="compass" class="w-5 h-5 text-custom-purple2"></i> 景點介紹
+          </h2>
+
+          <!-- 景點 1 -->
+          <div class="glass-silver-card rounded-2xl overflow-hidden flex flex-col sm:flex-row">
+            <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80" 
+                 alt="奮起湖老街" class="w-full sm:w-1/3 h-32 object-cover">
+            <div class="p-4 space-y-1 sm:w-2/3">
+              <h3 class="font-bold text-sm text-custom-darkPurple">奮起湖鐵道園區與老街</h3>
+              <p class="text-xs text-gray-600 leading-relaxed">
+                阿里山森林鐵路的中途要站，以雙主菜傳統便當與老街懷舊風情聞名。
+              </p>
+            </div>
+          </div>
+
+          <!-- 景點 2 -->
+          <div class="glass-silver-card rounded-2xl overflow-hidden flex flex-col sm:flex-row">
+            <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=600&q=80" 
+                 alt="玉山觀日出" class="w-full sm:w-1/3 h-32 object-cover">
+            <div class="p-4 space-y-1 sm:w-2/3">
+              <h3 class="font-bold text-sm text-custom-darkPurple">玉山國家公園觀日出</h3>
+              <p class="text-xs text-gray-600 leading-relaxed">
+                伴隨滿天星斗專車前往自忠，眺望玉山群峰壯麗山容，欣賞鹿林神木與野生台灣獼猴。
+              </p>
+            </div>
+          </div>
+
+          <!-- 景點 3：國立故宮博物院南院 (更換為戶外建築與全景照片) -->
+          <div class="glass-silver-card rounded-2xl overflow-hidden flex flex-col sm:flex-row">
+            <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80" 
+                 alt="故宮南院戶外建築" class="w-full sm:w-1/3 h-32 object-cover">
+            <div class="p-4 space-y-1 sm:w-2/3">
+              <h3 class="font-bold text-sm text-custom-darkPurple">國立故宮博物院南院</h3>
+              <p class="text-xs text-gray-600 leading-relaxed">
+                位在嘉義太保，建築以水墨畫流線體呈現，展示豐富的亞洲藝術文化典藏。
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 緊急聯絡區塊 -->
+        <div id="emergency-section" class="glass-dark-card rounded-2xl p-5 border border-rose-400/40 space-y-3">
+          <h2 class="text-base font-bold text-rose-300 flex items-center gap-2">
+            <i data-lucide="phone-call" class="w-5 h-5"></i> 緊急聯絡窗口 (山富旅遊)
+          </h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+            <a href="tel:0225612999" class="p-3 rounded-xl bg-custom-darkPurple/80 text-custom-silver border border-custom-purple2/30 flex justify-between items-center">
+              <div>
+                <div class="font-bold">專案提報人：魏伊婕</div>
+                <div class="text-gray-400">分機 5806</div>
+              </div>
+              <span class="text-custom-purple2 font-mono">02-2561-2999</span>
+            </a>
+            <a href="tel:0277349736" class="p-3 rounded-xl bg-custom-darkPurple/80 text-custom-silver border border-custom-purple2/30 flex justify-between items-center">
+              <div>
+                <div class="font-bold">專案主管：張琯臻</div>
+                <div class="text-gray-400">專線</div>
+              </div>
+              <span class="text-custom-purple2 font-mono">02-7734-9736</span>
+            </a>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- 新增 / 編輯行程 Modal 彈窗 -->
+    <div v-if="showModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+      <div class="glass-silver-card w-full max-w-sm rounded-2xl p-5 space-y-4 shadow-2xl">
+        <h3 class="text-base font-bold text-custom-darkPurple">{{ isEditing ? '編輯行程點' : '新增行程點' }}</h3>
+        <div class="space-y-3 text-xs">
+          <div>
+            <label class="text-gray-600 block mb-1">時間</label>
+            <input v-model="form.time" type="text" placeholder="例如: 09:00" class="w-full bg-white border border-custom-purple2 rounded-xl p-2.5 text-custom-darkPurple outline-none">
+          </div>
+          <div>
+            <label class="text-gray-600 block mb-1">行程標題</label>
+            <input v-model="form.title" type="text" placeholder="例如: 奮起湖老街" class="w-full bg-white border border-custom-purple2 rounded-xl p-2.5 text-custom-darkPurple outline-none">
+          </div>
+          <div>
+            <label class="text-gray-600 block mb-1">地點名稱</label>
+            <input v-model="form.location" type="text" placeholder="例如: 台北公司" class="w-full bg-white border border-custom-purple2 rounded-xl p-2.5 text-custom-darkPurple outline-none">
+          </div>
+          <div>
+            <label class="text-gray-600 block mb-1">備註說明</label>
+            <textarea v-model="form.notes" rows="2" placeholder="注意事項..." class="w-full bg-white border border-custom-purple2 rounded-xl p-2.5 text-custom-darkPurple outline-none"></textarea>
+          </div>
+        </div>
+        <div class="flex space-x-2 pt-2">
+          <button @click="showModal = false" class="flex-1 py-2 rounded-xl bg-gray-200 text-gray-700 font-bold text-xs">取消</button>
+          <button @click="saveScheduleItem" class="flex-1 py-2 rounded-xl bg-custom-purple1 text-white font-bold text-xs shadow">儲存</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const { createApp, ref, computed, onMounted } = Vue;
+
+    createApp({
+      setup() {
+        const activeTab = ref('overview');
+        const selectedDay = ref(1);
+        const tripState = ref('before'); // 行程階段控制: 'before' (未開始), 'ongoing' (進行中), 'completed' (已完成)
+
+        const showModal = ref(false);
+        const isEditing = ref(false);
+        const editingId = ref(null);
+
+        const form = ref({ time: '', title: '', location: '', notes: '' });
+
+        // 動態展示用 (進行中時顯示)
+        const currentEvent = ref({
+          time: '12:30',
+          title: '奮起湖老街懷舊巡禮與享用便當',
+          location: '奮起湖鐵道園區'
+        });
+
+        const nextEvent = ref({
+          time: '15:30',
+          title: '阿里山賓館 Check-in 辦理入住',
+          location: '阿里山賓館'
+        });
+
+        // 行程資料
+        const schedules = ref({
+          1: [
+            { id: 101, time: '06:40', title: '台北專車出發', location: '台北公司', notes: '享用摩斯漢堡早餐', temp: 20 },
+            { id: 102, time: '10:00', title: '嘉義搭阿里山小火車', location: '嘉義火車站', notes: '體驗森林鐵路四大特殊工法與林相變化', temp: 22 },
+            { id: 103, time: '12:30', title: '奮起湖老街懷舊巡禮', location: '奮起湖車站', notes: '享用雙主菜便當(戰斧豬排+雞腿)', temp: 18 },
+            { id: 104, time: '15:30', title: '阿里山賓館 Check-in', location: '阿里山賓館', notes: '百年歷史經典飯店，可順遊沼平公園與姊妹潭', temp: 14 }
+          ],
+          2: [
+            { id: 201, time: '05:00', title: '玉山國家公園觀日出', location: '自忠觀日步道', notes: '專車迎賓看日出，順遊鹿林神木與獼猴保護區', temp: 10 },
+            { id: 202, time: '12:00', title: '阿貴鄒族風味午餐', location: '達娜伊谷阿貴鄒族餐館', notes: '享用鹽烤台灣鯛與放山豬原住民風味餐', temp: 21 },
+            { id: 203, time: '14:30', title: '故宮南院藝術巡禮', location: '國立故宮博物院南院', notes: '水墨畫流線型建築，展覽亞洲文化藝術', temp: 24 }
+          ]
+        });
+
+        const currentDaySchedule = computed(() => schedules.value[selectedDay.value]);
+
+        const scrollToEmergency = () => {
+          activeTab.value = 'info';
+          setTimeout(() => {
+            const el = document.getElementById('emergency-section');
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+          }, 100);
+        };
+
+        const openAddModal = () => {
+          isEditing.value = false;
+          form.value = { time: '', title: '', location: '', notes: '' };
+          showModal.value = true;
+        };
+
+        const editItem = (item) => {
+          isEditing.value = true;
+          editingId.value = item.id;
+          form.value = { ...item };
+          showModal.value = true;
+        };
+
+        const saveScheduleItem = () => {
+          if (isEditing.value) {
+            const target = currentDaySchedule.value.find(i => i.id === editingId.value);
+            if (target) Object.assign(target, form.value);
+          } else {
+            schedules.value[selectedDay.value].push({
+              id: Date.now(),
+              ...form.value,
+              temp: 18
+            });
+          }
+          showModal.value = false;
+        };
+
+        const deleteItem = (id) => {
+          schedules.value[selectedDay.value] = schedules.value[selectedDay.value].filter(i => i.id !== id);
+        };
+
+        onMounted(() => {
+          lucide.createIcons();
+        });
+
+        return {
+          activeTab, selectedDay, tripState, currentDaySchedule,
+          currentEvent, nextEvent, showModal, isEditing, form,
+          scrollToEmergency, openAddModal, editItem, saveScheduleItem, deleteItem
+        };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
